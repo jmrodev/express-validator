@@ -1,47 +1,37 @@
-import express, { Request, Response, RequestHandler } from "express";
-import { body, validationResult } from "express-validator";
+import express, { Request, Response } from "express";
+import { checkSchema } from "express-validator";
+import { validatorSchema } from "./expressValidators";
+import { regexpHandler } from "./regExpHandler";
+import { validatorHandler } from "./validatorsHandler";
+import { loggerMiddleware } from "./loggerMiddleware";
 
 const app = express();
 const port = 3003;
 
 app.use(express.json());
+app.use(loggerMiddleware);
 
-// Validaciones
-const validations = [
-  body("name")
-    .trim() // Elimina espacios en blanco al principio y al final
-    .isLength({ min: 3 }) // Valida que tenga al menos 3 caracteres
-    .withMessage("El nombre debe tener al menos 3 caracteres")
-    .not().isEmpty() // Asegura que no esté vacío ni contenga solo espacios
-    .withMessage("El nombre no puede estar vacío o contener solo espacios")
-    .escape(), // Escapa caracteres potencialmente peligrosos (prevención XSS)
-  
-  body("email")
-    .isEmail() // Valida que sea un email
-    .withMessage("Debe proporcionar un email válido")
-    .normalizeEmail() // Normaliza el correo (quita posibles errores como mayúsculas innecesarias)
-];
+// Mensaje de inicio del servidor
+console.log('\n=================================');
+console.log(`Servidor iniciado ${new Date().toISOString()}`);
+console.log('=================================\n');
 
-// Manejador de la ruta POST
-const postHandler: RequestHandler = (req: Request, res: Response): void => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    res.status(400).json({ errors: result.array() });
-    return;
-  }
-  const { name, email } = req.body;
-  res.json({ message: "Hello", name, email });
-}
-  app.get("/", (_req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
+    console.log('Petición recibida en la ruta raíz');
     res.send("API funcionando correctamente");
-  });
+});
 
-  app.post(
-    "/post",
-    validations,
-    postHandler
-  );
+app.post(
+    "/validator",
+    checkSchema(validatorSchema),
+    validatorHandler
+);
 
-  app.listen(port, () => {
+app.post("/regexp", regexpHandler);
+
+app.listen(port, () => {
+    console.log('\n=================================');
     console.log(`Servidor corriendo en el puerto ${port}`);
-  });
+    console.log(`http://localhost:${port}`);
+    console.log('=================================\n');
+});

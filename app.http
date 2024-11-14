@@ -1,10 +1,19 @@
 GET http://localhost:3003
 
 ###
-POST http://localhost:3003/post
+POST http://localhost:3003/validator
 Content-Type: application/json
 
 {
-  "name": "           ",
+  "name": "dfghj",
   "email": "johnx@ample.gi"
+}
+
+###
+POST http://localhost:3003/regexp
+Content-Type: application/json
+
+{
+  "name": "dfghj",
+  "email": "kjdssdf@jsdfjk.cv"
 }
