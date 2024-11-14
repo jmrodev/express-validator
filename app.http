@@ -1,10 +1,10 @@
 GET http://localhost:3003
 
-###P
+###
 POST http://localhost:3003/post
 Content-Type: application/json
 
 {
-  "name": "Jo",
-  "email": "johnxample.com"
+  "name": "           ",
+  "email": "johnx@ample.gi"
 }
